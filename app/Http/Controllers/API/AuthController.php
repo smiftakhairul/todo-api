@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Enum\StatusEnum;
+use App\Http\Transformers\UserTransformer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class AuthController extends ApiController
             $token = $user->createToken('api_token')->plainTextToken;
             $user->access_token = $token;
 
-            return $this->successResponse($user, 'Logged in successfully.', StatusEnum::OK);
+            return $this->successResponse((new UserTransformer)->transform($user), 'Logged in successfully.', StatusEnum::OK);
         } catch (\Exception $exception) {
             return $this->errorResponse($exception->getMessage(), StatusEnum::SERVER_ERROR);
         }
@@ -55,7 +56,19 @@ class AuthController extends ApiController
                 'password' => Hash::make($request->input('password')),
             ]);
 
-            return $this->successResponse($user, 'Registered successfully.', StatusEnum::OK);
+            return $this->successResponse((new UserTransformer)->transform($user), 'Registered successfully.', StatusEnum::OK);
+        } catch (\Exception $exception) {
+            return $this->errorResponse($exception->getMessage(), StatusEnum::SERVER_ERROR);
+        }
+    }
+
+    public function user(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $user->access_token = $request->bearerToken();
+
+            return $this->successResponse((new UserTransformer)->transform($user), 'User information retrieved successfully.', StatusEnum::OK);
         } catch (\Exception $exception) {
             return $this->errorResponse($exception->getMessage(), StatusEnum::SERVER_ERROR);
         }

@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [BaseApiDir\AuthController::class, 'login']);
 Route::post('register', [BaseApiDir\AuthController::class, 'register']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return (new ApiController)
-        ->successResponse($request->user(), 'User information retrieved successfully.', 200);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', [BaseApiDir\AuthController::class, 'user']); 
+    Route::apiResource('todos', BaseApiDir\TodoController::class)->except(['show']);
+    Route::apiResource('tasks', BaseApiDir\TaskController::class)->except(['show']);
 });
