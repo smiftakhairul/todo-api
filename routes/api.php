@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API as BaseApiDir;
+use App\Http\Controllers\API\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::name('api.')->group(function () {
+    Route::post('login', [BaseApiDir\AuthController::class, 'login'])->name('login');
+    Route::post('register', [BaseApiDir\AuthController::class, 'register'])->name('register');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('user', [BaseApiDir\AuthController::class, 'user'])->name('user'); 
+        Route::post('logout', [BaseApiDir\AuthController::class, 'logout'])->name('logout');
+        Route::apiResource('todos', BaseApiDir\TodoController::class)->except(['show']);
+        Route::apiResource('tasks', BaseApiDir\TaskController::class)->except(['show']);
+    });
 });
