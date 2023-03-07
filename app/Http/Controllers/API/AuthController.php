@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends ApiController
@@ -69,6 +70,18 @@ class AuthController extends ApiController
             $user->access_token = $request->bearerToken();
 
             return $this->successResponse((new UserTransformer)->transform($user), 'User information retrieved successfully.', StatusEnum::OK);
+        } catch (\Exception $exception) {
+            return $this->errorResponse($exception->getMessage(), StatusEnum::SERVER_ERROR);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->currentAccessToken()->delete();
+            Auth::forgetGuards();
+
+            return $this->successResponse(null, 'User logged out successfully.', StatusEnum::OK);
         } catch (\Exception $exception) {
             return $this->errorResponse($exception->getMessage(), StatusEnum::SERVER_ERROR);
         }

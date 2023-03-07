@@ -16,11 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [BaseApiDir\AuthController::class, 'login']);
-Route::post('register', [BaseApiDir\AuthController::class, 'register']);
+Route::name('api.')->group(function () {
+    Route::post('login', [BaseApiDir\AuthController::class, 'login'])->name('login');
+    Route::post('register', [BaseApiDir\AuthController::class, 'register'])->name('register');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('user', [BaseApiDir\AuthController::class, 'user']); 
-    Route::apiResource('todos', BaseApiDir\TodoController::class)->except(['show']);
-    Route::apiResource('tasks', BaseApiDir\TaskController::class)->except(['show']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('user', [BaseApiDir\AuthController::class, 'user'])->name('user'); 
+        Route::post('logout', [BaseApiDir\AuthController::class, 'logout'])->name('logout');
+        Route::apiResource('todos', BaseApiDir\TodoController::class)->except(['show']);
+        Route::apiResource('tasks', BaseApiDir\TaskController::class)->except(['show']);
+    });
 });
