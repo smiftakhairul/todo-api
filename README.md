@@ -24,6 +24,10 @@ Test features of the API's by running following command.
 ```bash
 php artisan test
 ```
+Serve the project.
+```bash
+php artisan serve
+```
 You can test the project using the following user credentials.
 ```bash
 email: admin@demo.com
